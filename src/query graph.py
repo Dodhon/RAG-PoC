@@ -6,13 +6,12 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 openai_api_key = os.getenv("OPENAI_API_KEY")
+graphPassword = os.getenv("Neo4j_PASSWORD2")
 
 llm = ChatOpenAI(
     openai_api_key=openai_api_key
 )
-graphPassword = os.getenv("Neo4j_PASSWORD2")
 graph = Neo4jGraph(
     url="bolt://localhost:7687",
     username="neo4j",
@@ -37,7 +36,16 @@ cypher_chain = GraphCypherQAChain.from_llm(
     graph=graph,
     cypher_prompt=cypher_generation_prompt,
     allow_dangerous_requests=True,
+    # return_direct=True, 
+    # return_direct seems to be overridden by return_intermediate_steps
+    return_intermediate_steps=True,
     verbose=True
+    
+    #cypher_llm=ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
+    #qa_llm=ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k"),
+    # We can have separate LMs for each step
 )
 
-cypher_chain.invoke({"query": "what is paul's id"})
+result = cypher_chain.invoke({"query": "what is paul's id"})
+print(result)
+print(f"Intermediate steps: {result["intermediate_steps"]}")
