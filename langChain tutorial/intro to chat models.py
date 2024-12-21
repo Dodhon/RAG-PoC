@@ -20,6 +20,7 @@ print(f"Session ID: {SESSION_ID}")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(openai_api_key=openai_api_key)
 
+password = os.loadenv("Neo4j_PASSWORD2")
 graph = Neo4jGraph(
     url="bolt://localhost:7687",
     username="neo4j",

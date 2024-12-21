@@ -20,7 +20,7 @@ graph = Neo4jGraph(
 
 CYPHER_GENERATION_TEMPLATE = """
 You are an expert Neo4j Developer translating user questions into Cypher to answer questions about movies and provide recommendations.
-Convert the user's question based on the schema. Only use entities and relationship present in the schema. Don't use any ">" or "<"
+Convert the user's question based on the schema. Only use entities and relationships present in the schema. Don't use any ">" or "<"
 
 Schema: {schema}
 Question: {question}
@@ -38,14 +38,21 @@ cypher_chain = GraphCypherQAChain.from_llm(
     allow_dangerous_requests=True,
     # return_direct=True, 
     # return_direct seems to be overridden by return_intermediate_steps
-    return_intermediate_steps=True,
+    return_intermediate_steps=False,
     verbose=True
     
     #cypher_llm=ChatOpenAI(temperature=0, model="gpt-3.5-turbo"),
     #qa_llm=ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k"),
     # We can have separate LMs for each step
 )
+try:
+    query = "whats is pauls id"
+    result = cypher_chain.invoke({"query": query})
+except:
+    pass
 
-result = cypher_chain.invoke({"query": "what is paul's id"})
-print(result)
-print(f"Intermediate steps: {result["intermediate_steps"]}")
+
+
+#print(f"result is {result}")
+#print(f"Intermediate steps: {result["intermediate_steps"]}")
+
