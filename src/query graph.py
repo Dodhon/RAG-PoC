@@ -10,6 +10,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 graphPassword = os.getenv("Neo4j_PASSWORD2")
 
 llm = ChatOpenAI(
+    model="gpt-4o",
     openai_api_key=openai_api_key
 )
 graph = Neo4jGraph(
@@ -20,7 +21,7 @@ graph = Neo4jGraph(
 
 CYPHER_GENERATION_TEMPLATE = """
 You are an expert Neo4j Developer translating user questions into Cypher to answer questions about movies and provide recommendations.
-Convert the user's question based on the schema. Only use entities and relationships present in the schema. Don't use any ">" or "<"
+Convert the user's question based on the schema. Only use entities and relationships present in the schema. Don't use any ">" or "<". Don't use directed relationships.
 
 Schema: {schema}
 Question: {question}

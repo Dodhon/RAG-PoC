@@ -3,7 +3,6 @@ from langchain_openai import ChatOpenAI
 from duckduckgo_search import DDGS
 import os
 from dotenv import load_dotenv
-from langchain.prompts import PromptTemplate
 
 # pip install --upgrade --quiet duckduckgo-search
 # pip install -U duckduckgo_search==5.3.1b1
@@ -12,8 +11,9 @@ from langchain.prompts import PromptTemplate
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(
-    model="gpt-4o-mini",
-    openai_api_key=openai_api_key
+    model="gpt-4o",
+    openai_api_key=openai_api_key,
+    temperature=0
     )
 
 duckduckgo = DDGS(timeout=20)
@@ -46,7 +46,7 @@ search_results = "\n\n".join(
 
 template2 = PromptTemplate.from_template("""
 You are a helpful search assistant. Be nice, talkative and informative.
-Answer the user's question based on the search results below:
+Only use the search results below to answer. Answer the user's question based on the search results below.
 Search results:
 {search_results}
 User question: 

@@ -7,7 +7,7 @@ load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
 llm = OpenAI(
-    
+    model="gpt-4o",
     openai_api_key=openai_api_key
     
     
