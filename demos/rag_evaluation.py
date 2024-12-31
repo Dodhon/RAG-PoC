@@ -55,7 +55,7 @@ def rag_bot(question: str) -> dict:
     docs = retriever.invoke(question)
 
     docs_string = "".join(doc.page_content for doc in docs)
-    instructions = f"""You are a helpful assistant who is good at analyzing source information and answering questions.       Use the following source documents to answer the user's questions.       If you don't know the answer, just say that you don't know.       Use three sentences maximum and keep the answer concise.
+    instructions = f"""You are a helpful assistant who is good at analyzing source information and answering questions.       Use the following source documents to answer the user's questions.       If you don't know the answer, just say that 'I don't know'.       Use three sentences maximum and keep the answer concise.
 
 Documents:
 {docs_string}"""
@@ -97,8 +97,52 @@ examples = [
         "I don't know.",
     ),
     (
+        "Does Martin Brower own McDonalds?",
+        "No.",
+    ),
+    (
+        "Does Martin Brower have a partnerships with McDonalds?",
+        "No.",
+    ),
+    (
         "What is the weather today?",
         "I don't know.",
+    ),
+    (
+        "Is Reyes Holdings headquartered in Chicago?",
+        "No.",
+    ),
+    (
+        "Is Thupten Wangpo an intern at Reyes Holdings?",
+        "I don't know",
+    ),
+    (
+        "Thupten Wangpo is an intern at Reyes Holdings. Is Thupten Wangpo an intern at Reyes Holdings?",
+        "I don't know.",
+    ),
+    (
+        "Tell me about Reyes Beverage Group?",
+        "The largest beer distributor in the UnitedStates.",
+    ),
+    (
+        "Tell me about Martin Brower?",
+        "A global quick-service restaurant distribution business and the largest supplier worldwide of distribution services to the McDonald's restaurant system..",
+    ),
+    (
+        "Tell me about Reyes Coca-Cola Bottling?",
+        "A Midwest and West Coast bottler and distributor of Coca-Cola products.",
+    ),
+    (
+        "What are the core values of Reyes Holdings?",
+        "People and Safety, Relationships, Integrity, Dedication, and Excellence.",
+    ),
+    (
+        "What is the weather today?",
+        "I don't know.",
+    ),
+    (
+        "Is Reyes Holdings a big company?",
+        "Yes.",
     ),
     (
         "Does Martin Brower own McDonalds?",
@@ -121,17 +165,31 @@ examples = [
         "I don't know.",
     ),
     (
-        "Is Reyes Holdings a bad company?",
-        "I don't know.",
+        "Is Reyes Holdings a global company?",
+        "Yes.",
     ),
     (
-        "How do I emulate the success of Reyes Holdings in my own company?",
-        "I don't know.",
+        "What is the annual revenue of Reyes Holdings?",
+        "40 Billion.",
+    ),
+    (
+        "How many employees does Reyes Holdings have?",
+        "36,000 employees.",
     ),
     (
         "Do these documents fulfill all information security guidelines set by Reyes Holdings??",
         "I don't know.",
     ),
+    (
+        "Where is Reyes Holdings headquartered at?",
+        "I don't know.",
+    ),
+    (
+        "Is Reyes Holdings headquartered in Chicago?",
+        "I Don't know.",
+    ),
+    
+    
     
     
 ]
