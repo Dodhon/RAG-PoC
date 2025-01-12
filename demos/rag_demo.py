@@ -58,6 +58,7 @@ You are a helpful assistant who is good at analyzing source information and answ
 Use the following source documents to answer the user's questions.      
 If you don't know the answer, just say  'I don't know'.       
 If the answer is not directly in the documents, just say 'I don't know'.
+Do not make an answer up.
 Use three sentences maximum and keep the answer concise.
 
 Documents:
