@@ -18,41 +18,51 @@ load_dotenv()
 os.environ['USER_AGENT'] = 'USER_AGENT'
 
 # Initialize Claude model for LLM tasks
-llm = ChatAnthropic(
-    model='claude-3-opus-20240229',
-    anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
-    temperature=0
-)
+def get_llm():
+    llm = ChatAnthropic(
+        model='claude-3-opus-20240229',
+        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
+        temperature=0
+    )
+    return llm
 
-# First, get the PDF files from the directory
-directory = '/Users/thuptenwangpo/Documents/GitHub/neo4j-practice/Sample_PDFs'
-file_paths = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.pdf')]
 
-if not file_paths:
-    print("No PDF files found in directory:", directory)
-    exit()
+# get load, split, vectorize pdf files
+def get_pdf_files(directory = '/Users/thuptenwangpo/Documents/GitHub/neo4j-practice/Sample_PDFs'):
+    file_paths = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.pdf')]
 
-# Load and process documents
-docs = [PyMuPDFLoader(file_path).load() for file_path in file_paths]
-docs_list = [item for sublist in docs for item in sublist]
+    if not file_paths:
+        print("No PDF files found in directory:", directory)
+        exit()
 
-# Split documents and create vector store
-text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-    chunk_size=250, chunk_overlap=0
-)
-doc_splits = text_splitter.split_documents(docs_list)
+    # Load and process documents
+    docs = [PyMuPDFLoader(file_path).load() for file_path in file_paths]
+    docs_list = [item for sublist in docs for item in sublist]
 
-vectorstore = InMemoryVectorStore.from_documents(
-    documents=doc_splits,
-    embedding=OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY")),
-)
-retriever = vectorstore.as_retriever(k=6)
+    # Split documents and create vector store
+    text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=250, chunk_overlap=0
+    )
+    doc_splits = text_splitter.split_documents(docs_list)
+
+    vectorstore = InMemoryVectorStore.from_documents(
+        documents=doc_splits,
+        embedding=OpenAIEmbeddings(openai_api_key=os.getenv("OPENAI_API_KEY")),
+    )
+    retriever = vectorstore.as_retriever(k=6)
+    return retriever
 
 # Get user question and retrieve relevant docs
 print("")
-question = input("Please note that this is AI generated content. What is your question: ")
-retrieved_docs = retriever.invoke(question)
-docs_string = "".join(doc.page_content for doc in retrieved_docs)
+
+def get_user_question():
+    question = input("Please note that this is AI generated content. What is your question: ")
+    return question
+
+def get_retrieved_docs(retriever, question):
+    retrieved_docs = retriever.invoke(question)
+    docs_string = "".join(doc.page_content for doc in retrieved_docs)
+    return docs_string
 
 # Create initial prompt for document search
 initial_prompt = ChatPromptTemplate.from_messages([
@@ -76,15 +86,22 @@ Answer:
 ])
 
 # Process initial query
-chain = initial_prompt | llm
-response = chain.invoke({
-    "docs_string": docs_string,
-    "input": question,
-})
-output = response.content
-
+def process_initial_query(llm, initial_prompt, docs_string, question):
+    chain = initial_prompt | llm
+    response = chain.invoke({
+        "docs_string": docs_string,
+        "input": question,
+    })
+    output = response.content
+    return output
 # If no answer found, search the web
-if output.startswith("I don't know"):
+def check_answer(output, question):
+    if output.startswith("I don't know"):
+        search_web(question)
+    else:
+        return output
+
+def search_web(question):
     print("")
     print("I don't know. I will now look online. Please note that the following information is ai generated.")
     print("")
@@ -104,9 +121,9 @@ if output.startswith("I don't know"):
             search_results = []
             for result in search_result:
                 search_results.append(f"""
-Title: {result['title']}
-Content: {result['body']}
-URL: {result['href']}
+            Title: {result['title']}
+            Content: {result['body']}
+            URL: {result['href']}
                 """.strip())
             search_results = "\n\n".join(search_results)
 
@@ -123,7 +140,7 @@ URL: {result['href']}
             Answer:
             """.strip())
 
-            web_chain = web_prompt | llm
+            web_chain = web_prompt | get_llm()
             response = web_chain.invoke({"question": question, "search_results": search_results})
             output = response.content
         else:
@@ -133,4 +150,18 @@ URL: {result['href']}
         print(f"Error during web search: {str(e)}")
         output = "I apologize, but I encountered an error while searching online."
 
-print(output)
+    print(output)
+
+def main():
+    load_dotenv()
+    os.environ['USER_AGENT'] = 'USER_AGENT'
+    llm = get_llm()
+    retriever = get_pdf_files()
+    question = get_user_question()
+    docs_string = get_retrieved_docs(retriever, question)
+    output = process_initial_query(llm, initial_prompt, docs_string, question)
+    output = check_answer(output, question)
+
+
+if __name__ == "__main__":
+    main()
