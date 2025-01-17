@@ -14,8 +14,6 @@ from langchain_core.prompts import ChatPromptTemplate
 # pip install -U duckduckgo_search==5.3.1b1
 # the above solved rate limit exception
 
-load_dotenv()
-os.environ['USER_AGENT'] = 'USER_AGENT'
 
 # Initialize Claude model for LLM tasks
 def get_llm():
