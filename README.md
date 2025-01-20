@@ -1,6 +1,6 @@
 Hello!
 
-This project is a proof of concept RAG that uses OpenAI, LangChain, LangSmith, and DuckDuckGo.
+This project is a proof of concept RAG that uses OpenAI llm and embeddings, Claude llm, LangChain, LangSmith, and DuckDuckGo.
 
 To run this on your own device, you will need  OpenAI, LANGCHAIN_ENDPOINT, LANGCHAIN_API_KEY, and LANGCHAIN_PROJECT keys.
 
