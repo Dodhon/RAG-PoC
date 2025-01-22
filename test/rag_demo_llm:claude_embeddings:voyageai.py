@@ -17,10 +17,12 @@ from langchain.text_splitter import CharacterTextSplitter
 # pip install -U duckduckgo_search==5.3.1b1
 # the above solved rate limit exception
 
+# need voyageai and anthropic api keys to run this file
+
 
 def get_llm():
     llm = ChatAnthropic(
-        model='claude-3-opus-20240229',
+        model='claude-3-5-sonnet-20241022',
         anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
         temperature=0
     )
@@ -28,7 +30,7 @@ def get_llm():
 
 
 # get load, split, vectorize txt files
-def get_pdf_files(directory = '/Users/thuptenwangpo/Documents/GitHub/neo4j-practice/sample_tibetan_text'):
+def get_pdf_files(directory):
     file_paths = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.txt')]
 
     if not file_paths:
@@ -90,7 +92,6 @@ If you don't know the answer, just say 'I don't know'.
 If the answer is not directly in the documents, just say 'I don't know'. This is important for the next part of the agent.
 Only use the documents to answer the question.
 Do not make an answer up. If the documents don't have the answer, be concise and say 'I don't know'. Do not say anything else after that. Do not explain anything else. Just saying 'I don't know' is enough.
-Use three sentences maximum and keep the answer concise.
 
 Documents:
 {docs_string}
@@ -171,11 +172,12 @@ def main():
     load_dotenv()
     os.environ['USER_AGENT'] = 'myagent'
     llm = get_llm()
-    retriever = get_pdf_files()
+    retriever = get_pdf_files('/Users/thuptenwangpo/Documents/GitHub/neo4j-practice/sample_tibetan_text')
     question = get_user_question()
     docs_string = get_retrieved_docs(retriever, question)
     output = process_initial_query(llm, initial_prompt, docs_string, question)
     output = check_answer(output, question)
+    print(output)
 
 
 if __name__ == "__main__":

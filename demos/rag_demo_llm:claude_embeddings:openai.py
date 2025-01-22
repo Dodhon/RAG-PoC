@@ -159,6 +159,7 @@ def main():
     docs_string = get_retrieved_docs(retriever, question)
     output = process_initial_query(llm, initial_prompt, docs_string, question)
     output = check_answer(output, question)
+    print(output)
 
 
 if __name__ == "__main__":
